@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "toolkit"
+version = "0.1.0"
+description = "Console utilities: arithmetic calculator and unit converter"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "Student" }]
+
+[project.scripts]
+toolkit = "toolkit.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 88
+
+[tool.ruff.lint.per-file-ignores]
+"src/toolkit/__init__.py" = ["F401"]
