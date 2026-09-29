@@ -1,5 +1,3 @@
-"""Точка входа CLI: ``python -m toolkit``."""
-
 import argparse
 import sys
 
@@ -11,35 +9,33 @@ from .errors import ToolkitError
 def build_parser():
     parser = argparse.ArgumentParser(
         prog="toolkit",
-        description=(
-            "Console utilities: arithmetic calculator and unit converter."
-        ),
+        description="Калькулятор выражений и конвертер величин.",
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
     calc = sub.add_parser(
-        "calc", help="Evaluate an arithmetic expression."
+        "calc", help="Посчитать арифметическое выражение."
     )
     calc.add_argument(
         "expression",
-        help="Expression, e.g. '1 + 2 * 3'.",
+        help="Выражение, например '1 + 2 * 3'.",
     )
 
     conv = sub.add_parser(
-        "convert", help="Convert a value between units."
+        "convert", help="Перевести значение из одной единицы в другую."
     )
-    conv.add_argument("value", help="Numeric value to convert.")
+    conv.add_argument("value", help="Числовое значение.")
     conv.add_argument(
         "--from",
         dest="from_unit",
         required=True,
-        help="Source unit (mm, cm, m, km, g, kg, c, f, k).",
+        help="Исходная единица: mm, cm, m, km, g, kg, c, f, k.",
     )
     conv.add_argument(
         "--to",
         dest="to_unit",
         required=True,
-        help="Target unit (mm, cm, m, km, g, kg, c, f, k).",
+        help="Целевая единица: mm, cm, m, km, g, kg, c, f, k.",
     )
 
     return parser
@@ -54,7 +50,7 @@ def main(argv=None):
         elif args.command == "convert":
             print(convert(args.value, args.from_unit, args.to_unit))
     except ToolkitError as exc:
-        print(f"error: {exc}", file=sys.stderr)
+        print(f"Ошибка: {exc}", file=sys.stderr)
         return 2
     return 0
 
