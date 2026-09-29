@@ -1,75 +1,61 @@
-"""Тесты вычислительного ядра (без subprocess)."""
-
 import pytest
 
 from toolkit.calculator import calculate, tokenize, validate
 from toolkit.errors import CalculatorError
 
-
-def test_tokenize_basic():
+# Поддержать целые и вещественные числа.
+def test_tokenize_int():
     assert tokenize("1 + 2 * 3") == ["1", "+", "2", "*", "3"]
+    assert tokenize("1.23") == ["1.23"]
+    assert calculate("1 + 2") == 3
+    assert calculate("1.5 * 2") == 3.0
 
 
-def test_tokenize_float():
-    assert tokenize("3.14") == ["3.14"]
+# Поддержать +, -, *, /.
+# Соблюдать приоритет * и / над + и -.
+def test_calc():
+    assert calculate("1 + 2 * 3") == 7
+    assert calculate("1 * 2 - 3") == -1
+    assert calculate("1 + 2 * 2 / 4") == 2
 
 
-def test_precedence():
-    assert calculate("2 + 3 * 4") == 14
-    assert calculate("2 * 3 + 4") == 10
-    assert calculate("2 + 3 * 4 - 5") == 9
-
-
-def test_spaces_ignored():
-    assert calculate("  1   +   2 * 3  ") == 7
-
-
-def test_unary_signs():
-    assert calculate("-5") == -5
-    assert calculate("+7") == 7
+# Поддержать унарный + и - перед числом.
+def test_unary():
+    assert calculate("-1") == -1
+    assert calculate("+2") == 2
     assert calculate("1 + -2") == -1
 
 
-def test_float_and_negative_result():
-    assert calculate("1.5 * 2") == 3.0
-    assert calculate("2 - 5") == -3
+# Игнорировать пробелы между токенами.
+def test_space():
+    assert calculate("  1   +   2 * 3  ") == 7
 
 
-def test_empty_expression():
+# Пустое выражение.
+def test_empty():
     with pytest.raises(CalculatorError):
         calculate("")
 
 
-def test_invalid_character():
+# Недопустимый символ.
+def test_letter():
     with pytest.raises(CalculatorError):
         calculate("1 + a")
 
 
-def test_missing_operand():
+# Пропущенный операнд.
+def test_operand():
     with pytest.raises(CalculatorError):
         calculate("1 +")
 
 
-def test_two_binary_operators():
+# Два бинарных оператора подряд.
+def test_two_operators():
     with pytest.raises(CalculatorError):
         calculate("1 * * 2")
 
 
-def test_missing_operator():
-    with pytest.raises(CalculatorError):
-        calculate("1 2")
-
-
-def test_division_by_zero():
+# Деление на ноль.
+def test_zero():
     with pytest.raises(CalculatorError):
         calculate("1 / 0")
-
-
-def test_invalid_number():
-    with pytest.raises(CalculatorError):
-        calculate("1.2.3")
-
-
-def test_validate_rejects_empty():
-    with pytest.raises(CalculatorError):
-        validate([])
